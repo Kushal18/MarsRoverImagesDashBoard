@@ -16,12 +16,9 @@ app.use('/', express.static(path.join(__dirname, '../public')))
 app.get("/rovers", async (req, res, next) => {
     try {
       const roverName = req.query.name;
-      console.log(`rovers: roverName ${roverName}`);
-      console.log(`rovers: API_KEY ${process.env.API_KEY}`);
       let images = await fetch(
         `https://api.nasa.gov/mars-photos/api/v1/rovers/${roverName}/photos?sol=10&api_key=${process.env.API_KEY}`
       ).then((res) => res.json());
-      console.log(`rovers: images fetched ${JSON.stringify(images)}`);
       res.send({ images });
     } catch(e) {
       console.log(`error while fetching the images for ${e}`);
