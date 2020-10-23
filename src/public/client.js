@@ -5,7 +5,6 @@ let store = Immutable.Map({
   rover: "",
 });
 
-const flag = false;
 // add our markup to the page
 const root = document.getElementById("root");
 
@@ -23,20 +22,23 @@ const App = (state) => {
   let rovers = state.get('rovers');
   let roverInfo = [];
 
+  const greet =  Greeting(); //higher order function example.
+  const tabs = showTabs(rovers.toJS()); //higher order function example.
+
   if(state.get('rover') !== "") {
-    roverInfo = state.getIn(['rover','images','photos']);
+    roverInfo = state.getIn(['rover','images','photos'],'ifNotSet');
   }
 
   return `
         <div class="container">
           <div class="row">
             <div class="col-md-12">
-              ${Greeting(store.get('user'))}
+              ${greet()}
             </div>
           </div>
           <div class="row">
             <div class="col-md-12">
-                ${showTabs(rovers.toJS())}
+              ${tabs()}
             </div>
           </div>
           <div class="row">
@@ -54,9 +56,9 @@ window.addEventListener("load", () => {
 
 // ------------------------------------------------------  COMPONENTS
 
-// Pure function that renders conditional information -- THIS IS JUST AN EXAMPLE, you can delete it.
-const Greeting = (name) => {
-  return `
+// Example of a higher order function. 
+const Greeting = () => {
+  return () => `
         <p class="text-center font-italic text-monospace">Welcome to Mars Rover DashBoard checkout the 
             most recent images taken by that rover and also some important information  about the rover and its mission
         </p>
@@ -64,7 +66,7 @@ const Greeting = (name) => {
 };
 
 const showTabs = (rovers) => {
-  return `<ul class="nav nav-tabs">
+  return () => `<ul class="nav nav-tabs">
             ${rovers.map((rover) => {
               return `<div class="col-md-3">
                         <li class="nav-item">
@@ -72,27 +74,27 @@ const showTabs = (rovers) => {
                         </li>
                       </div>
                     `
-            })} 
+            }).join('')} 
           </ul>`
 };
 
 const showRoverDetails = (roverInfo) => {
   if(roverInfo.length > 0) {
-
     return `<div class="card" style="width: 60rem;display:inline-block;">
             ${roverInfo.map((info) => {
               return `    <div class="card" style="width: 18rem;display:inline-block;">
                             <div class="card-body">
-                              <img src="${info.img_src}" class="card-img-top" width="200" height="200" alt="...">
-                              <h5 class="card-title">Name :${info.camera.name}x</h5>
+                              <h6 class="card-subtitle mb-2 text-muted">Status: ${info.rover.status}</h6>
                               <h6 class="card-subtitle mb-2 text-muted">Launch Date: ${info.rover.launch_date}</h6>
                               <h6 class="card-subtitle mb-2 text-muted">Landing Date: ${info.rover.landing_date}</h6>
+                              <img src="${info.img_src}" class="card-img-top" width="200" height="200" alt="...">
+                              <h5 class="card-title">Name :${info.camera.name}x</h5>
                               <h6 class="card-subtitle mb-2 text-muted">Earth Date: ${info.earth_date}</h6>
                               <h6 class="card-subtitle mb-2 text-muted">Rover Id: ${info.id}</h6>
                             </div>
                           </div>
                     `
-            })} 
+            }).join('')} 
           </div>
           `
   }
